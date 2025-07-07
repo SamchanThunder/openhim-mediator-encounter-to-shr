@@ -41,15 +41,40 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
     console.log("Invalid Request Body");
     return res.status(400).send("Invalid Request Body");
   }else{
-    // Alter the format a little to be accepted by OpenCR
+    // Alter the format if mixed up or invalid information
+
+    // Identifier.system needs to be accepted by OpenCR
     if(requestBody.identifier){
-      requestBody.identifier[0].system = "http://clientregistry.org/openmrs"; 
+      requestBody.identifier[0].system = "http://clientregistry.org/lims"; 
       // requestBody.identifier[0].system = "http://clientregistry.org/" + requestBody.identifier[0].system; 
-      
-      console.log("JSON of Patient Data:", JSON.stringify(requestBody, null, 2));
     }else{
       console.error("The request body has no identifier array.")
+      return;
     }
+
+    // If surname is full name
+    if(requestBody.name){
+      var nameArray = requestBody.name[0].family.split(' ');
+      if(nameArray.length == 2){
+        requestBody.name[0].given[0] = nameArray[0];
+        requestBody.name[0].family = nameArray[1];
+      }
+    }else{
+      console.error("The request body has no name array.")
+      return;
+    }
+
+    // If no tele number
+    if (!requestBody.telecom) {
+      requestBody.telecom = [
+        {
+          system: "phone",
+          value: "0"
+        }
+      ];
+    }
+
+    console.log("JSON of Patient Data:", JSON.stringify(requestBody, null, 2));
   }
 
   try{
