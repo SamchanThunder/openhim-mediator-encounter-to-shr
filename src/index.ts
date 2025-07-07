@@ -3,9 +3,9 @@ const bodyParser = require('body-parser');
 const { mediatorConfig } = require('./mediatorConfig');
 const { PORT, OPENHIM, CR } = require('./config');
 const fs = require('fs');
-const os = require('os');
 const https = require('https');
 const axios = require('axios');
+const testJson = require('./test.json'); // Test patient json
 import express, {Request, Response} from 'express';
 
 
@@ -20,17 +20,17 @@ app.get('*', (_: Request, res: Response) => {
   res.send('Mediator online')
 });
 
-
-var certFilePath = '/home/samchanthunder/certs/crCerts/openmrs_cert.pem';
-var keyFilePath = '/home/samchanthunder/certs/crCerts/openmrs_key.pem';
+// To Do: Find better way to handle certificates
+var certFilePath = '/home/samchanthunder/certs/crCerts/ansible_cert.pem';
+var keyFilePath = '/home/samchanthunder/certs/crCerts/ansible_key.pem';
 var caCertFilePath = '/home/samchanthunder/certs/crCerts/server_cert.pem';
 
-
+// Certificate handling
 const httpsAgent = new https.Agent({
   cert: fs.readFileSync(certFilePath),
   key: fs.readFileSync(keyFilePath),
   ca: fs.readFileSync(caCertFilePath),
-  rejectUnauthorized: false,
+  rejectUnauthorized: false, // Only for development (--insecure)
 })
 
 
@@ -41,20 +41,21 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
     console.log("Invalid Request Body");
     return res.status(400).send("Invalid Request Body");
   }else{
+    // Alter the format a little to be accepted by OpenCR
     if(requestBody.identifier){
-      requestBody.identifier[0].system = "http://clientregistry.org/" + requestBody.identifier[0].system;
-      console.log("Payload sent to CR:", JSON.stringify(requestBody, null, 2));
+      requestBody.identifier[0].system = "http://clientregistry.org/openmrs"; 
+      // requestBody.identifier[0].system = "http://clientregistry.org/" + requestBody.identifier[0].system; 
+      
+      console.log("JSON of Patient Data:", JSON.stringify(requestBody, null, 2));
     }else{
       console.error("The request body has no identifier array.")
     }
   }
 
-
   try{
     const axiosResponse = await axios.post(CR.url, requestBody, { httpsAgent, headers: { 'Content-Type': 'application/json' } });
     res.status(axiosResponse.status).json(axiosResponse.data);
     console.log("OpenCR Response Data:", axiosResponse.data);
-
 
     console.log("Successs");
   }catch (error: any){
@@ -71,7 +72,7 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
   }
 })
 
-
+// Register mediator to OpenHIM
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
  
