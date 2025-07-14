@@ -5,7 +5,7 @@ const { PORT, OPENHIM, CR } = require('./config');
 const fs = require('fs');
 const https = require('https');
 const axios = require('axios');
-const testJson = require('./test.json'); // Test patient json
+const testJson = require('./test.json'); // Test Patient Data for Testing Purposes
 import express, {Request, Response} from 'express';
 
 
@@ -42,7 +42,7 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
     return res.status(400).send("Invalid Request Body");
   }else{
     // Alter the format if mixed up or invalid information
-
+    console.log(requestBody);
     // Identifier.system needs to be accepted by OpenCR
     if(requestBody.identifier){
       requestBody.identifier[0].system = "http://clientregistry.org/lims"; 
@@ -58,6 +58,9 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
       if(nameArray.length == 2){
         requestBody.name[0].given[0] = nameArray[0];
         requestBody.name[0].family = nameArray[1];
+      }
+      if(!requestBody.name.use){
+        requestBody.name[0].use = "official";
       }
     }else{
       console.error("The request body has no name array.")
