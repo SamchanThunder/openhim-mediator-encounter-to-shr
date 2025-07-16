@@ -33,6 +33,7 @@ docker run -d
 3. Click on Routes then Add New Route
 4. Create a route (Route Name: CR Mediator Route, Host: crmediator, Port: 7060). Then click Set Route and Save Changes.
 ```
+<img width="400" height="300" alt="Screenshot 2025-07-02 150412" src="https://github.com/user-attachments/assets/e68fdcf9-25e1-41de-af3d-b0134e684f7f" />
 
 ## **Relevant Folder Structure**
 ```
@@ -44,3 +45,6 @@ docker run -d
 |  |--test.json              # Sample Patient Data for Testing Purposes
 |--.env                      # Environment Variables used in config.ts
 ```
+------------------
+https://github.com/user-attachments/assets/be0edcc1-e2e0-4f3f-853c-260ab7739ba6
+
