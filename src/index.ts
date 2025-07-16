@@ -1,7 +1,7 @@
 const { registerMediator } = require('openhim-mediator-utils');
 const bodyParser = require('body-parser');
 const { mediatorConfig } = require('./mediatorConfig');
-const { PORT, OPENHIM, CR } = require('./config');
+const { PORT, OPENHIM, CR, CERTS} = require('./config');
 const fs = require('fs');
 const https = require('https');
 const axios = require('axios');
@@ -11,7 +11,6 @@ import express, {Request, Response} from 'express';
 
 const app = express()
 
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -20,46 +19,52 @@ app.get('*', (_: Request, res: Response) => {
   res.send('Mediator online')
 });
 
-// To Do: Find better way to handle certificates
-var certFilePath = '/home/samchanthunder/certs/crCerts/ansible_cert.pem';
-var keyFilePath = '/home/samchanthunder/certs/crCerts/ansible_key.pem';
-var caCertFilePath = '/home/samchanthunder/certs/crCerts/server_cert.pem';
+// Client and Server Certficates' File Path for OpenCR
+var clientCertPath = CERTS.CLIENT_CERT;
+var clientKeyPath = CERTS.CLIENT_KEY;
+var serverCertPath = CERTS.SERVER_CERT;
 
-// Certificate handling
+// Certificate handling for OpenCR
 const httpsAgent = new https.Agent({
-  cert: fs.readFileSync(certFilePath),
-  key: fs.readFileSync(keyFilePath),
-  ca: fs.readFileSync(caCertFilePath),
+  cert: fs.readFileSync(clientCertPath),
+  key: fs.readFileSync(clientKeyPath),
+  ca: fs.readFileSync(serverCertPath),
   rejectUnauthorized: false, // Only for development (--insecure)
 })
 
-
-// When a post request is made to /fhir/Patient in OpenHIM
+// Runs when a post request is made to /fhir/Patient in OpenHIM
 app.post('/fhir/Patient', async (req: Request, res: Response) => {
   const requestBody = req.body;
+
   if (!requestBody) {
     console.log("Invalid Request Body");
     return res.status(400).send("Invalid Request Body");
   }else{
-    // Alter the format if mixed up or invalid information
-    console.log(requestBody);
-    // Identifier.system needs to be accepted by OpenCR
+    console.log("Unchanged request body:\n" , requestBody);
+
+    // OpenCR only accepts patient data with specific identifier systems. We need to change the identifier system if invalid.
     if(requestBody.identifier){
-      requestBody.identifier[0].system = "http://clientregistry.org/lims"; 
-      // requestBody.identifier[0].system = "http://clientregistry.org/" + requestBody.identifier[0].system; 
+      if(requestBody.identifier[0].system){
+        requestBody.identifier[0].system = "http://clientregistry.org/lims"; 
+        // requestBody.identifier[0].system = "http://clientregistry.org/" + requestBody.identifier[0].system; 
+      }else{
+         requestBody.identifier[0].system = "http://clientregistry.org/lims"; 
+      }
     }else{
       console.error("The request body has no identifier array.")
       return;
     }
 
-    // If surname is full name
     if(requestBody.name){
+      // Community Tool Healthkit formats the name in its patient data incorrectly to OpenHIM. This corrects it.
       var nameArray = requestBody.name[0].family.split(' ');
       if(nameArray.length == 2){
         requestBody.name[0].given[0] = nameArray[0];
         requestBody.name[0].family = nameArray[1];
       }
-      if(!requestBody.name.use){
+
+      // If name[0].use is absent, creates a name[0].use attribute as "official"
+      if(!requestBody.name[0].use){
         requestBody.name[0].use = "official";
       }
     }else{
@@ -67,7 +72,7 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
       return;
     }
 
-    // If no tele number
+    // If patient data has no telephone number, assigns a default number "0" to it.
     if (!requestBody.telecom) {
       requestBody.telecom = [
         {
@@ -76,16 +81,15 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
         }
       ];
     }
-
-    console.log("JSON of Patient Data:", JSON.stringify(requestBody, null, 2));
+    console.log("Changed request body:\n" , requestBody);
   }
 
+  // After formatting patient data correctly, post to OpenCR
   try{
     const axiosResponse = await axios.post(CR.url, requestBody, { httpsAgent, headers: { 'Content-Type': 'application/json' } });
     res.status(axiosResponse.status).json(axiosResponse.data);
-    console.log("OpenCR Response Data:", axiosResponse.data);
 
-    console.log("Successs");
+    console.log("Successsfully Posted Patient Data to OpenCR");
   }catch (error: any){
     console.error("Error in posting patient to CR");
      if (error.response) {
@@ -108,7 +112,7 @@ if (process.env.NODE_ENV !== 'test') {
   if (err) {
     throw new Error(`Failed to register mediator. Check your Config. ${err}`)
   }
-  console.log("Successful registration")
+  console.log("Successfully registered CR Mediator")
 });
 }
 
