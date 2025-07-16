@@ -5,7 +5,7 @@ const { PORT, OPENHIM, CR, CERTS} = require('./config');
 const fs = require('fs');
 const https = require('https');
 const axios = require('axios');
-const testJson = require('./test.json'); // Test Patient Data for Testing Purposes
+const testJson = require('./test.json'); // Sample Patient Data for Testing Purposes
 import express, {Request, Response} from 'express';
 
 
@@ -42,13 +42,18 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
   }else{
     console.log("Unchanged request body:\n" , requestBody);
 
-    // OpenCR only accepts patient data with specific identifier systems. We need to change the identifier system if invalid.
+    /* OpenCR only accepts patient data with specific identifier systems. We need to change the identifier system if its invalid.
+     To change what identifier system OpenCR accepts, you must edit the config_.json. Within the correct config_.json file, 
+     add new systems you want to be valid into the systems.CRBaseURI.internalid.uri array.
+    */
     if(requestBody.identifier){
       if(requestBody.identifier[0].system){
-        requestBody.identifier[0].system = "http://clientregistry.org/lims"; 
-        // requestBody.identifier[0].system = "http://clientregistry.org/" + requestBody.identifier[0].system; 
+        /* For example, patient data from CHT has an identifier[0].system = "cht". However, my client registry only accepts
+        identifier systems with http://clientregistry.org/, such as http://clientregistry.org/cht
+        */
+        requestBody.identifier[0].system = "http://clientregistry.org/" + requestBody.identifier[0].system; 
       }else{
-         requestBody.identifier[0].system = "http://clientregistry.org/lims"; 
+         requestBody.identifier[0].system = "http://clientregistry.org/unknown"; 
       }
     }else{
       console.error("The request body has no identifier array.")

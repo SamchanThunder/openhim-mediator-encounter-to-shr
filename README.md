@@ -1,5 +1,5 @@
 # <ins>Client Registry Mediator</ins>
-### Formats and Posts patient data from OpenHIM to OpenCR
+### Receives patient data from OpenHIM, standardizes it for OpenCR requirements, and securely forwards it to the client registry.
 -------------
 ## **How to run the mediator:**
 
@@ -11,11 +11,11 @@ npm install
 2. In terminal, build and run the mediator as a docker container:
 ```
 docker build -t crmediator . 
-docker run -d 
-  --network cht-net 
-  --name crmediator 
-  --rm 
-  -p 7060:7060 
+docker run -d \
+  --network cht-net \
+  --name crmediator \
+  --rm \
+  -p 7060:7060 \
   crmediator
 ```
 
@@ -37,7 +37,7 @@ iv.  Create a route (Route Name: CR Mediator Route, Host: crmediator, Port: 7060
 
 ## **Relevant Folder Structure**
 ```
-|--certificates              # Folder for Client and Server Certificates to access OpenCR Server
+|--certificates              # Folder for Client and Server Certificates to access OpenCR Server (Add the correct certificates)
 |--src                      
 |  |--config.ts              # Configuration Settings for index.ts
 |  |--index.ts               # Handles mediator registration and functions (receives, formats, and posts patient data)
@@ -45,6 +45,5 @@ iv.  Create a route (Route Name: CR Mediator Route, Host: crmediator, Port: 7060
 |  |--test.json              # Sample Patient Data for Testing Purposes
 |--.env                      # Environment Variables used in config.ts
 ```
-------------------
-https://github.com/user-attachments/assets/be0edcc1-e2e0-4f3f-853c-260ab7739ba6
-
+-------------------
+https://github.com/user-attachments/assets/aa9f847e-e1fd-40f2-bb8c-c3cfbd10f50c
