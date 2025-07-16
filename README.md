@@ -21,17 +21,17 @@ docker run -d
 
 3. Install the mediator in OpenHIM Console:
 ```
-i. In the OpenHIM Console, go to Mediators
-ii. Click on the Client Registry Patient Mediator
+i.   In the OpenHIM Console, go to Mediators
+ii.  Click on the Client Registry Patient Mediator
 iii. Click the green plus button to install the mediator.
 ```
 
 4. Create a channel in OpenHIM Console:
 ```
-i. In the OpenHIM Console, go to Channels
-ii. Click on the channel "FHIR Server" (which is the channel that receieves patient data from point of systems)
+i.   In the OpenHIM Console, go to Channels
+ii.  Click on the channel "FHIR Server" (which is the channel that receieves patient data from point of systems)
 iii. Click on Routes then Add New Route
-iv. Create a route (Route Name: CR Mediator Route, Host: crmediator, Port: 7060). Then click Set Route and Save Changes.
+iv.  Create a route (Route Name: CR Mediator Route, Host: crmediator, Port: 7060). Then click Set Route and Save Changes.
 ```
 <img width="400" height="300" alt="Screenshot 2025-07-02 150412" src="https://github.com/user-attachments/assets/e68fdcf9-25e1-41de-af3d-b0134e684f7f" />
 
