@@ -1,14 +1,14 @@
 # <ins>Client Registry Mediator</ins>
 ### Receives patient data from OpenHIM, standardizes it for OpenCR requirements, and securely forwards it to the client registry.
 -------------
-## **How to run the mediator:**
+## **How to run the mediator on Docker:**
 
 1. In terminal, install node modules after cloning repo (one time command):
 ```
 npm install
 ```
 
-2. In terminal, build and run the mediator as a docker container:
+2. In terminal, build and run the mediator as a docker container (network name should be same as the Client Registry):
 ```
 docker build -t crmediator . 
 docker run -d \
