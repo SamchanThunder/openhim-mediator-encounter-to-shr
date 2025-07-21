@@ -95,6 +95,10 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
     res.status(axiosResponse.status).json(axiosResponse.data);
 
     console.log("Successsfully Posted Patient Data to OpenCR");
+
+    // Log the CRUID (Client Registry Unique ID).
+    const CRUID = axiosResponse.headers.locationcruid;
+    console.log("CRUID: " , CRUID);
   }catch (error: any){
     console.error("Error in posting patient to CR");
      if (error.response) {
