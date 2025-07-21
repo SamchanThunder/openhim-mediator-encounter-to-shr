@@ -42,16 +42,39 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
   }else{
     console.log("Unchanged request body:\n" , requestBody);
 
-    /* OpenCR only accepts patient data with specific identifier systems. We need to change the identifier system if its invalid.
-     To change what identifier system OpenCR accepts, you must edit the config_.json. Within the correct config_.json file, 
-     add new systems you want to be valid into the systems.CRBaseURI.internalid.uri array.
+    /* 1. IDENTIFIER SYSTEM AND PATIENT SOURCE LOGIC:
+    OpenCR only accepts patient data with specific identifier systems. We need to change the identifier system if its invalid.
+    To change what identifier system OpenCR accepts, you must edit the config_.json file in OpenCR. Within the correct config_.json, 
+    add new systems you want to be valid into the systems.CRBaseURI.internalid.uri array.
     */
     if(requestBody.identifier){
       if(requestBody.identifier[0].system){
+        
         /* For example, patient data from CHT has an identifier[0].system = "cht". However, my client registry only accepts
         identifier systems with http://clientregistry.org/, such as http://clientregistry.org/cht
         */
-        requestBody.identifier[0].system = "http://clientregistry.org/" + requestBody.identifier[0].system; 
+        var systemName = requestBody.identifier[0].system;
+        requestBody.identifier[0].system = "http://clientregistry.org/" + systemName;
+; 
+
+        /* In OpenCR, the source of the patient data is fetched from meta.tag[i], where system is: "http://openclientregistry.org/fhir/clientid"
+        We want to add this to display the source of the patient data on OpenCR. Note: OpenCR only accepts patient data with specific sources.
+        To add more valid sources to OpenCR, add to the clients array in the config_.json file in OpenCR. The code attribute should match 
+        a clients.id in clients.
+        */
+        const tagObject = { 
+          system: "http://openclientregistry.org/fhir/clientid",
+          code: systemName,
+          display: systemName
+        };
+        
+        if (!requestBody.meta) {
+          requestBody.meta = { tag: [tagObject] };
+        } else if (!requestBody.meta.tag) {
+          requestBody.meta.tag = [tagObject];
+        } else {
+          requestBody.meta.tag.push(tagObject);
+        }
       }else{
          requestBody.identifier[0].system = "http://clientregistry.org/unknown"; 
       }
@@ -60,6 +83,9 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
       return;
     }
 
+    /* 2. NAME LOGIC:
+    Makes changes to name in patient data, if needed, to correct how it is dispalyed in OpenCR
+    */
     if(requestBody.name){
       // Community Tool Healthkit formats the name in its patient data incorrectly to OpenHIM. This corrects it.
       var nameArray = requestBody.name[0].family.split(' ');
@@ -77,7 +103,9 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
       return;
     }
 
-    // If patient data has no telephone number, assigns a default number "0" to it.
+    /* 3. TELEPHONE LOGIC
+    If patient data has no telephone number, assigns a default number "0" to it.
+    */
     if (!requestBody.telecom) {
       requestBody.telecom = [
         {
@@ -99,6 +127,8 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
     // Log the CRUID (Client Registry Unique ID).
     const CRUID = axiosResponse.headers.locationcruid;
     console.log("CRUID: " , CRUID);
+    console.log("HEADER:" , axiosResponse.headers);
+    console.log("STATUS:" , axiosResponse.status);
   }catch (error: any){
     console.error("Error in posting patient to CR");
      if (error.response) {
