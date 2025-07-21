@@ -29,7 +29,7 @@ iii. Click the green plus button to install the mediator.
 4. Create a channel in OpenHIM Console:
 ```
 i.   In the OpenHIM Console, go to Channels
-ii.  Click on the channel "FHIR Server" (which is the channel that receieves patient data from point of systems)
+ii.  Click on the channel that receives patient data from point of systems. In my case, it is FHIR Server.
 iii. Click on Routes then Add New Route
 iv.  Create a route (Route Name: CR Mediator Route, Host: crmediator, Port: 7060). Then click Set Route and Save Changes.
 ```
