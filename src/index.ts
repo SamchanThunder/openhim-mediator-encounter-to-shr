@@ -46,6 +46,9 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
     OpenCR only accepts patient data with specific identifier systems. We need to change the identifier system if its invalid.
     To change what identifier system OpenCR accepts, you must edit the config_.json file in OpenCR. Within the correct config_.json, 
     add new systems you want to be valid into the systems.CRBaseURI.internalid.uri array.
+
+    Note: This mediator expects that in the unaltered patient data, identifier[0].system exists and it is assigned 
+    the name of the Point of System it is from.
     */
     if(requestBody.identifier){
       if(requestBody.identifier[0].system){
