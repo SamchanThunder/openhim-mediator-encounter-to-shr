@@ -1,7 +1,7 @@
 {
   "resourceType": "Patient",
   "identifier": [{
-    "system": "http://clientregistry.org/dhis2",
+    "system": "cht",
     "value": "997542"
   }, {
     "system": "http://system2.org",
