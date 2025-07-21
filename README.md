@@ -35,6 +35,14 @@ iv.  Create a route (Route Name: CR Mediator Route, Host: crmediator, Port: 7060
 ```
 <img width="400" height="300" alt="Screenshot 2025-07-02 150412" src="https://github.com/user-attachments/assets/e68fdcf9-25e1-41de-af3d-b0134e684f7f" />
 
+## **Standardization Logic**
+We need to alter the format of the patient data for OpenCR to accept it. Read the commenting in index.ts to understand what exactly is being changed and why.
+Here is the current standardization logic implemented:
+```
+1. Identifier System and Source Display Correction
+2. Name Display Correction
+3. Empty Telephone Correction
+```
 ## **Relevant Folder Structure**
 ```
 |--certificates              # Folder for Client and Server Certificates to access OpenCR Server (Add the correct certificates)
