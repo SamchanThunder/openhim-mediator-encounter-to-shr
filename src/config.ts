@@ -31,6 +31,11 @@ export const CERTS = {
   SERVER_CERT: getEnvironmentVariable('SERVER_CERT', 'certificates/server_cert.pem'),
 };
 
+//Shared Health Record (FHIR Server) 
+export const SHR = {
+  SHR_URL: getEnvironmentVariable('SHR_URL','')
+}
+
 function getEnvironmentVariable(env: string, def: string) {
   if (process.env.NODE_ENV === 'test') {
     return def;

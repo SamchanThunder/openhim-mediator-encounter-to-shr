@@ -1,7 +1,7 @@
 const { registerMediator } = require('openhim-mediator-utils');
 const bodyParser = require('body-parser');
 const { mediatorConfig } = require('./mediatorConfig');
-const { PORT, OPENHIM, CR, CERTS} = require('./config');
+const { PORT, OPENHIM, CR, CERTS, SHR} = require('./config');
 const fs = require('fs');
 const https = require('https');
 const axios = require('axios');
@@ -119,16 +119,19 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
 
   // After formatting patient data correctly, post to OpenCR
   try{
-    const axiosResponse = await axios.post(CR.url, requestBody, { httpsAgent, headers: { 'Content-Type': 'application/json' } });
-    res.status(axiosResponse.status).json(axiosResponse.data);
+    const axiosResponseCR = await axios.post(CR.url, requestBody, { httpsAgent, headers: { 'Content-Type': 'application/json' } });
+    res.status(axiosResponseCR.status).json(axiosResponseCR.data);
 
     console.log("Successsfully Posted Patient Data to OpenCR");
 
-    // Log the CRUID (Client Registry Unique ID).
-    const CRUID = axiosResponse.headers.locationcruid;
-    console.log("CRUID: " , CRUID);
-    console.log("HEADER:" , axiosResponse.headers);
-    console.log("STATUS:" , axiosResponse.status);
+    // Get the CRUID (Client Registry Unique ID).
+    const CRUID = axiosResponseCR.headers.locationcruid;
+    
+    // Post Patient Data with CRUID to a FHIR Server (that acts as a Shared Health Record)
+    requestBody.ID = CRUID;
+    const axiosResponseSHR = await axios.post(SHR.url, requestBody, { headers: { 'Content-Type': 'application/json' } });
+    res.status(axiosResponseSHR.status).json(axiosResponseSHR.data);
+
   }catch (error: any){
     console.error("Error in posting patient to CR");
      if (error.response) {
