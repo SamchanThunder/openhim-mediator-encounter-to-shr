@@ -14,7 +14,6 @@ const app = express()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-
 app.get('*', (_: Request, res: Response) => {
   res.send('Mediator online')
 });
@@ -46,6 +45,10 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
     OpenCR only accepts patient data with specific identifier systems. We need to change the identifier system if its invalid.
     To change what identifier system OpenCR accepts, you must edit the config_.json file in OpenCR. Within the correct config_.json, 
     add new systems you want to be valid into the systems.CRBaseURI.internalid.uri array.
+    
+    Note: This mediator expects the patient data from OpenHIM or the POS to have a requestBody.identifier, where 
+    requestBody.identifier[0].system is the name of the original POS and requestBody.identifier[0].value to be
+    the patient's UID from its POS.
     */
     if(requestBody.identifier){
       if(requestBody.identifier[0].system){
@@ -61,7 +64,9 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
         });
 
         /* In OpenCR, the source of the patient data is fetched from meta.tag[i], where system is: "http://openclientregistry.org/fhir/clientid"
-        We want to add this to display the source of the patient data on OpenCR. Note: OpenCR only accepts patient data with specific sources.
+        We want to add this to display the source of the patient data on OpenCR. 
+        
+        Note: OpenCR only accepts patient data with specific sources.
         To add more valid sources to OpenCR, add to the clients array in the config_.json file in OpenCR. The code attribute should match 
         a clients.id in clients.
         */
@@ -125,18 +130,19 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
     const axiosResponseCR = await axios.post(CR.url, requestBody, { httpsAgent, headers: { 'Content-Type': 'application/json' } });
     console.log("Successsfully Posted Patient Data to OpenCR");
 
-    // Get the CRUID (Client Registry Unique ID).
+    // Get the CRUID (Client Registry Unique ID)
     const CRUID = axiosResponseCR.headers.locationcruid;
     
-    // Post Patient Data with CRUID to a Shared Health Record (Which is a HAPI FHIR Server in my case)
+    // Reformat patient data to add its CRUID
     requestBody.identifier[requestBody.identifier.length - 1].value = CRUID;
     requestBody.identifier.push({
       use: "official",
       system: "cruid",
       value: CRUID.substring(8)
     });
-
     console.log("SHR Request Body: \n" , requestBody);
+
+    // Post Patient Data with CRUID to a Shared Health Record (Which is a HAPI FHIR Server in my case)
     const axiosResponseSHR = await axios.post(SHR.url, requestBody, { headers: { 'Content-Type': 'application/json' } });
     res.status(axiosResponseSHR.status).json(axiosResponseSHR.data);
 
