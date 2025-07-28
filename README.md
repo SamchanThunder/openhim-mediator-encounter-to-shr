@@ -2,7 +2,7 @@
 ### 1. Receives patient data from OpenHIM
 ### 2. Standardizes it for OpenCR requirements
 ### 3. Securely forwards it to the client registry (OpenCR)
-### 4. Obtains Client Registry Unique Identifier (CRUID) and posts the patient data to a shared health record (HAPI FHIR) with its CRUID. 
+### 4. Obtains Client Registry Unique Identifier (CRUID) and posts the patient data to a shared health record (HAPI FHIR JPA Server) with its CRUID. 
 -------------
 ## **How to run the mediator on Docker:**
 
@@ -60,5 +60,5 @@ Here is the current standardization logic implemented:
 ### **Demo:**
 https://github.com/user-attachments/assets/aa9f847e-e1fd-40f2-bb8c-c3cfbd10f50c
 
-### **Example of Patient Data on the Shared Health Record (HAPI FHIR):**
+### **Example of Patient Data on the Shared Health Record (HAPI FHIR JPA Server):**
 <img width="1280" height="737" alt="Screenshot 2025-07-28 150420" src="https://github.com/user-attachments/assets/ae6d2389-5f45-4128-b189-bcbd1702a46e" />
