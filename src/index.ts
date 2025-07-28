@@ -120,21 +120,21 @@ app.post('/fhir/Patient', async (req: Request, res: Response) => {
   // After formatting patient data correctly, post to OpenCR
   try{
     const axiosResponseCR = await axios.post(CR.url, requestBody, { httpsAgent, headers: { 'Content-Type': 'application/json' } });
-    res.status(axiosResponseCR.status).json(axiosResponseCR.data);
-
     console.log("Successsfully Posted Patient Data to OpenCR");
 
     // Get the CRUID (Client Registry Unique ID).
     const CRUID = axiosResponseCR.headers.locationcruid;
     
     // Post Patient Data with CRUID to a FHIR Server (that acts as a Shared Health Record)
-    requestBody.ID = CRUID;
+    requestBody.cruid = CRUID.substring(8);
+    console.log("SHR Request Body: \n" , requestBody);
     const axiosResponseSHR = await axios.post(SHR.url, requestBody, { headers: { 'Content-Type': 'application/json' } });
     res.status(axiosResponseSHR.status).json(axiosResponseSHR.data);
 
+    console.log("Succesfully posted to SHR");
   }catch (error: any){
-    console.error("Error in posting patient to CR");
-     if (error.response) {
+    console.error("Error in posting patient to CR", error);
+    if (error.response) {
       console.error("Status:", error.response.status);
       console.error("Headers:", error.response.headers);
       console.error("Data:", error.response.data);

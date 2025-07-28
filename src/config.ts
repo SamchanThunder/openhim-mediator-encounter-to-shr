@@ -33,7 +33,7 @@ export const CERTS = {
 
 //Shared Health Record (FHIR Server) 
 export const SHR = {
-  SHR_URL: getEnvironmentVariable('SHR_URL','')
+  url: getEnvironmentVariable('SHR_URL','http://shr:8080/fhir/Patient')
 }
 
 function getEnvironmentVariable(env: string, def: string) {
