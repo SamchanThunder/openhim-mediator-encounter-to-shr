@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Port of Mediator
-export const PORT = process.env.PORT || 7060;
+export const PORT = process.env.PORT || 7070;
 
 // OpenHIM Credentials and OpenHIM Core URL to register mediator to OpenHIM
 export const OPENHIM = {
@@ -19,21 +19,9 @@ export const FHIR = {
   password: getEnvironmentVariable('FHIR_PASSWORD', 'interop-password'),
 };
 
-// Client Registry URL which we post patient data to
-export const CR = {
-  url: getEnvironmentVariable('CR_URL', 'https://opencr:3000/fhir/Patient'),
-};
-
-// Client and Server Certificate file paths in docker container
-export const CERTS = {
-  CLIENT_CERT: getEnvironmentVariable('CLIENT_CERT', 'certificates/ansible_cert.pem'),
-  CLIENT_KEY: getEnvironmentVariable('CLIENT_KEY', 'certificates/ansible_key.pem'),
-  SERVER_CERT: getEnvironmentVariable('SERVER_CERT', 'certificates/server_cert.pem'),
-};
-
-//Shared Health Record (FHIR Server) 
+//Shared Health Record (HAPI FHIR JPA Server in my case) 
 export const SHR = {
-  url: getEnvironmentVariable('SHR_URL','http://shr:8080/fhir/Patient')
+  url: getEnvironmentVariable('SHR_URL','http://shr:8080/fhir/')
 }
 
 function getEnvironmentVariable(env: string, def: string) {

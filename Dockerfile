@@ -7,7 +7,6 @@ RUN npm install
 
 COPY . .
 RUN npm run build
-COPY src/test.json dist/test.json
 
-EXPOSE 7060
+EXPOSE 7070
 CMD ["npm", "start"]

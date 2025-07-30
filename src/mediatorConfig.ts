@@ -1,18 +1,18 @@
 export const mediatorConfig = {
-  urn: "urn:mediator:cr_mediator",
+  urn: "urn:mediator:encounter_mediator",
   version: "1.0.0",
-  name: "Client Registry Patient Mediator",
-  description: "Posts Patient from OpenHIM to OpenCR",
+  name: "Encounter to SHR Mediator",
+  description: "Posts Encounter to SHR with CRUID",
   defaultChannelConfig: [
     {
-      name: "CR Patient Mediator",
-      urlPattern: '^/crmediator/.*$',
+      name: "Encounter to SHR Mediator",
+      urlPattern: '^/encountermediator/.*$',
       routes: [
         {
-          name: "CR Patient Mediator Route",
-          host: "crmediator",
-          pathTransform: 's/\\/crmediator/',
-          port: "7060",
+          name: "Encounter to SHR Mediator Route",
+          host: "encountermediator",
+          pathTransform: 's/\\/encountermediator/',
+          port: "7070",
           primary: true,
           type: "http"
         }
@@ -24,10 +24,10 @@ export const mediatorConfig = {
   ],
   endpoints: [
     {
-      name: "CR Patient Mediator Endpoint",
-      host: "crmediator",
+      name: "Encounter to SHR Mediator Endpoint",
+      host: "encountermediator",
       path: "/",
-      port: "7060",
+      port: "7070",
       primary: true,
       type: "http"
     }
