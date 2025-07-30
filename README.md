@@ -2,8 +2,7 @@
 ### 1. Receives encounter data from OpenHIM
 ### 2. Obtains and changes subject reference ID to the correct patient ID from the Shared Health Record
 ### 3. Forwards the encounter data to the Shared Health Record
-
-Prerequisite Mediator: openhim-mediator-client-registry (which in short posts patient data from OpenHIM to the Shared Health Record) 
+### Prerequisite Mediator: openhim-mediator-client-registry (which, in short, posts patient data from OpenHIM to the Shared Health Record) and data that follows the HL7 FHIR Standard 
 -------------
 ## **How to run the mediator on Docker:**
 
@@ -33,11 +32,10 @@ iii. Click the green plus button to install the mediator.
 4. Create a channel in OpenHIM Console:
 ```
 i.   In the OpenHIM Console, go to Channels
-ii.  Click on the channel that receives patient data from point of systems. In my case, it is FHIR Server.
+ii.  Click on the channel that receives FHIR data from point of services. In my case, it is FHIR Server.
 iii. Click on Routes then Add New Route
 iv.  Create a route (Route Name: Encounter Mediator Route, Host: encountermediator, Port: 7070). Then click Set Route and Save Changes.
 ```
-<img width="400" height="300" alt="Screenshot 2025-07-02 150412" src="https://github.com/user-attachments/assets/e68fdcf9-25e1-41de-af3d-b0134e684f7f" />
 
 ## **Logic**
 Although Patient 1 is stored in both OpenHIM and our Shared Health Record, Patient 1's UID is different on both systems. We need to alter the subject reference on the encounter data from the UID of Patient 1 on OpenHIM to the correct UID of Patient 1 on the Shared Health Record.
@@ -56,3 +54,4 @@ To accomplish this, the encounter data before getting sent to OpenHIM should hav
 -------------------
 
 ### **Example of Encounter Data on the Shared Health Record (HAPI FHIR JPA Server):**
+<img width="2559" height="1599" alt="image" src="https://github.com/user-attachments/assets/7424e0b7-7b32-4e88-8d75-8c4faaf73335" />
