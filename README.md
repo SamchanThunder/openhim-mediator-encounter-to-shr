@@ -2,7 +2,7 @@
 ### 1. Receives encounter data from OpenHIM
 ### 2. Obtains and changes subject reference ID to the correct patient ID from the Shared Health Record
 ### 3. Forwards the encounter data to the Shared Health Record
-### Prerequisite Mediator: openhim-mediator-client-registry (which, in short, posts patient data from OpenHIM to the Shared Health Record) and data that follows the HL7 FHIR Standard 
+### Prerequisite: 1. openhim-mediator-client-registry (which, in short, posts patient data from OpenHIM to the Shared Health Record) 2. Data that follows the HL7 FHIR Standard 
 -------------
 ## **How to run the mediator on Docker:**
 
