@@ -86,7 +86,7 @@ if (process.env.NODE_ENV !== 'test') {
   if (err) {
     throw new Error(`Failed to register mediator. Check your Config. ${err}`)
   }
-  console.log("Successfully registered CR Mediator")
+  console.log("Successfully registered Encounter to SHR Mediator")
 });
 }
 
