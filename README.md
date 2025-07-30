@@ -51,6 +51,8 @@ To accomplish this, the encounter data before getting sent to OpenHIM should hav
 |--.env                      # Environment Variables used in config.ts
 ```
 -------------------
+### Demo:
+https://github.com/user-attachments/assets/c92d668f-482e-46ce-8e60-730e87442107
 
 ### **Example of Encounter Data on the Shared Health Record (HAPI FHIR JPA Server):**
 <img width="2559" height="1599" alt="image" src="https://github.com/user-attachments/assets/7424e0b7-7b32-4e88-8d75-8c4faaf73335" />
