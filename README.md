@@ -1,4 +1,4 @@
-# <ins>Client Registry Mediator</ins>
+# <ins>Encounter to SHR Mediator</ins>
 ### 1. Receives encounter data from OpenHIM
 ### 2. Obtains and changes subject reference ID to the correct patient ID from the Shared Health Record
 ### 3. Forwards the encounter data to the Shared Health Record
@@ -44,10 +44,9 @@ To accomplish this, the encounter data before getting sent to OpenHIM should hav
 
 ## **Relevant Folder Structure**
 ```
-|--certificates              # Folder for Client and Server Certificates to access OpenCR Server (Add the correct certificates)
 |--src                      
 |  |--config.ts              # Configuration Settings for index.ts
-|  |--index.ts               # Handles mediator registration and functions (receives, formats, and posts patient data)
+|  |--index.ts               # Handles mediator registration and functions (receives, formats, and posts encounter data and find correct subject reference)
 |  |--mediatorConfig.ts      # Mediator Configuration Object
 |--.env                      # Environment Variables used in config.ts
 ```
