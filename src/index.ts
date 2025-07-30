@@ -25,7 +25,7 @@ app.post('/fhir/Encounter', async (req: Request, res: Response) => {
   This is because the current subject reference refers to the patient's OpenHIM UID, but we want it 
   to refer to the patient's UID on the target system. 
   */ 
-  var patientUrl;
+  let patientUrl;
 
   if (!requestBody) {
     console.log("Invalid Request Body");
@@ -37,11 +37,11 @@ app.post('/fhir/Encounter', async (req: Request, res: Response) => {
     This means that the system and patient source uid must be added to the encounter data even from the POS 
     (before sending it to OpenHIM)
     */
-    var system = requestBody.identifier[0].system;
-    var uid = requestBody.identifier[0].value;
+    let system = requestBody.identifier[0].system;
+    let patientUid = requestBody.identifier[0].value;
     
     // URL to help us find the correct patient on target system
-    patientUrl = SHR.url + "Patient?identifier=" + encodeURIComponent(system) + "|" + encodeURIComponent(uid); 
+    patientUrl = SHR.url + "Patient?identifier=" + encodeURIComponent(system) + "|" + encodeURIComponent(patientUid); 
   }
 
   try{
